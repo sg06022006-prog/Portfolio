@@ -1,0 +1,52 @@
+---
+import { translator } from '../i18n/ui';
+import { asset, type Locale } from '../i18n/paths';
+import { versionedAsset } from '../lib/assets';
+interface Props { model: string; topology?: string; lighting?: 'studio' | 'night' | 'soft'; exposure?: number; viewDirection?: [number, number, number]; title: string; poster: string; locale?: Locale; }
+const { model, topology, lighting = 'studio', exposure = 1, viewDirection = [1, 0.7, 1], title, poster, locale = 'en' } = Astro.props;
+const t = translator(locale);
+const labels = {
+  loading: t('loading'), ready: t('ready'), idle: t('idle'), error: t('loadError'),
+  interrupted: t('interrupted'), keyboard: t('keyboard'),
+};
+---
+<section class="model-viewer" data-model={versionedAsset(model)} data-topology={topology ? versionedAsset(topology) : undefined}
+  data-lighting={lighting} data-exposure={exposure} data-view-direction={JSON.stringify(viewDirection)} data-labels={JSON.stringify(labels)} aria-label={title + ' / ' + t('inspector')}>
+  <h2>{t('inspector')}</h2><p>{t('controls')}</p>
+  <div class="viewport">
+    <img class="poster" src={asset(poster)} alt={title} loading="lazy" />
+    <button class="load-button" type="button">{t('load')}</button>
+  </div>
+  <p class="status" role="status" aria-live="polite">{t('idle')}</p>
+  <div class="toolbar" role="group" aria-label={t('viewModes')}>
+    <button type="button" data-mode="materials" aria-pressed="true" disabled>{t('withTextures')}</button>
+    <button type="button" data-mode="solid" aria-pressed="false" disabled>{t('withoutTextures')}</button>
+    {topology && <button type="button" data-mode="mesh" aria-pressed="false" disabled>{t('mesh')}</button>}
+    <button type="button" class="reset" disabled>{t('reset')}</button>
+    <button type="button" data-zoom="in" aria-label={t('zoomIn')} disabled>+</button>
+    <button type="button" data-zoom="out" aria-label={t('zoomOut')} disabled>−</button>
+    <button type="button" class="close-viewer" disabled>{t('closeViewer')}</button>
+  </div>
+  <p class="note">{t('viewerNote')}</p>
+  <noscript><p>{t('noScript')}</p></noscript>
+</section>
+<script>
+  import { setupModelViewers } from '../scripts/model-viewer';
+  setupModelViewers();
+</script>
+<style>
+
+  .model-viewer { margin: 0 0 70px; padding-top: 32px; border-top: 1px solid #29372d; }
+  h2 { color: #9ddd64; font-size: 14px; letter-spacing: 1.5px; }
+  p { color: #9bac9e; font-size: 14px; line-height: 1.7; }
+  .viewport { position: relative; height: clamp(300px, 60vh, 600px); overflow: hidden; border: 1px solid #2d3a30; border-radius: 14px; background: #151c17; }
+  .poster { width: 100%; height: 100%; object-fit: contain; opacity: 0.65; }
+  .viewport :global(canvas) { display: block; width: 100%; height: 100%; touch-action: none; }
+  button { border: 1px solid #435548; padding: 12px 16px; border-radius: 8px; background: #19231c; color: #f3f5f2; font: inherit; cursor: pointer; }
+  button:disabled { opacity: 0.45; cursor: default; }
+  button[aria-pressed="true"], .load-button { background: #9ddd64; color: #101710; }
+  button:focus-visible { outline: 2px solid #9ddd64; outline-offset: 4px; }
+  .load-button { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; }
+  .note { font-size: 12px; }
+</style>

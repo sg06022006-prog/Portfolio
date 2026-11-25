@@ -1,0 +1,29 @@
+---
+import Home from '../../views/Home.astro';
+import About from '../../views/About.astro';
+import Catalog from '../../views/Catalog.astro';
+import ProjectPage from '../../views/Project.astro';
+import { getProjects, type Project } from '../../data/projects';
+import type { Locale } from '../../i18n/paths';
+
+export async function getStaticPaths() {
+  const routes = [];
+  for (const locale of ['ru', 'fi'] as const) {
+    for (const page of [undefined, 'about', 'projects', 'models']) {
+      routes.push({ params: { lang: locale, page }, props: { locale, project: undefined } });
+    }
+    for (const project of await getProjects(locale)) {
+      routes.push({ params: { lang: locale, page: 'projects/' + project.slug }, props: { locale, project } });
+    }
+  }
+  return routes;
+}
+interface Props { locale: Locale; project?: Project; }
+const { locale, project } = Astro.props;
+const page = Astro.params.page;
+---
+{project ? <ProjectPage locale={locale} project={project} />
+  : page === 'about' ? <About locale={locale} />
+  : page === 'projects' ? <Catalog locale={locale} />
+  : page === 'models' ? <Catalog locale={locale} modelsOnly />
+  : <Home locale={locale} />}

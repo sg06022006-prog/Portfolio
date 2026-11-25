@@ -1,0 +1,333 @@
+
+---
+import Layout from '../layouts/Layout.astro';
+import ModelViewer from '../components/ModelViewer.astro';
+import type { Project } from '../data/projects';
+import { translator } from '../i18n/ui';
+import { asset, pagePath, type Locale } from '../i18n/paths';
+
+interface Props {
+  project: Project;
+  locale?: Locale;
+}
+
+const { project, locale = 'en' } = Astro.props;
+const t = translator(locale);
+---
+
+<Layout locale={locale} title={`${project.title} | Dblmok`} description={project.description} image={project.preview}>
+  <main class="project-page">
+
+    <div class="topline">
+      <span>{t('projectDetails')}</span>
+      <span>Dblmok / {t('art')}</span>
+    </div>
+
+    <a class="back-link" href={pagePath(locale, 'projects/')}>
+      <span aria-hidden="true">←</span>
+      {t('allProjects')}
+    </a>
+
+    <header class="project-header">
+      <p class="eyebrow">{t('projects')} / {project.category}</p>
+
+      <h1>{project.title}<span>.</span></h1>
+      {project.status === 'in-progress' && <span class="work-status">{t('inProgress')}</span>}
+
+      <p class="subtitle">
+        {project.description ?? t('art')}
+      </p>
+    </header>
+
+    <section class="project-gallery" aria-label={`${project.title}: ${t('gallery')}`}>
+      <div class="gallery-heading">
+        <span>{t('gallery')}</span>
+        <span>{t('mainRender')}</span>
+      </div>
+
+      <figure class="render">
+        <img
+          src={asset(project.preview)}
+          alt={project.alt}
+          fetchpriority="high"
+        />
+
+        <figcaption>
+          <span>{project.title.toUpperCase()} / {t('mainRender')}</span>
+
+          <a
+            href={asset(project.image)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t('fullImage')}
+          </a>
+        </figcaption>
+      </figure>
+
+      {project.gallery.map((image) => (
+        <figure class="render additional-render">
+          <img src={asset(image.src)} alt={image.alt} loading="lazy" decoding="async" />
+          {image.caption && <figcaption>{image.caption}</figcaption>}
+        </figure>
+      ))}
+    </section>
+    {(project.overview.length > 0 || project.tools.length > 0 || project.technical.length > 0) && (
+      <section class="project-information" aria-label={t('projectDetails')}>
+        {project.overview.length > 0 && (
+          <div class="project-overview">
+            <h2>{t('aboutProject')}</h2>
+            {project.overview.map((paragraph) => <p>{paragraph}</p>)}
+          </div>
+        )}
+
+        {(project.tools.length > 0 || project.technical.length > 0) && (
+          <aside class="project-facts" aria-label={t('projectDetails')}>
+            {project.tools.length > 0 && (
+              <div>
+                <h2>{t('tools')}</h2>
+                <ul class="tools-list">
+                  {project.tools.map((tool) => <li>{tool}</li>)}
+                </ul>
+              </div>
+            )}
+            {project.technical.length > 0 && (
+              <div>
+                <h2>{t('projectDetails')}</h2>
+                <dl>
+                  {project.technical.map((detail) => (
+                    <div class="technical-detail">
+                      <dt>{detail.label}</dt>
+                      <dd>{detail.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            )}
+          </aside>
+        )}
+      </section>
+    )}
+
+    {project.model && <ModelViewer locale={locale} model={project.model} topology={project.topology} lighting={project.lighting} exposure={project.exposure} viewDirection={project.viewDirection} title={project.title} poster={project.preview} />}
+
+  </main>
+</Layout>
+
+<style>
+  .project-page {
+    min-height: 100vh;
+    padding: 42px 6% 0;
+    background: #0b100d;
+    color: #f3f5f2;
+  }
+
+  .topline,
+  .gallery-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    color: #809586;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.7px;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 65px;
+    color: #9ddd64;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    color: #b9f58a;
+  }
+
+  .project-header {
+    padding: 35px 0 65px;
+  }
+
+  .eyebrow {
+    color: #9ddd64;
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-weight: 700;
+  }
+
+  h1 {
+    margin: 20px 0;
+    font-size: clamp(55px, 8vw, 125px);
+    line-height: 1;
+    letter-spacing: -0.065em;
+    font-weight: 900;
+  }
+
+  h1 span {
+    color: #9ddd64;
+  }
+
+  .subtitle {
+    max-width: 650px;
+    color: #9bac9e;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  .project-gallery {
+    padding: 35px 0 100px;
+    border-top: 1px solid #29372d;
+  }
+
+  .gallery-heading {
+    margin-bottom: 22px;
+  }
+
+  .render {
+    max-width: 880px;
+    margin: 0 auto;
+    overflow: hidden;
+    background: #171f19;
+    border: 1px solid #2d3a30;
+    border-radius: 14px;
+  }
+
+  .render img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    object-fit: contain;
+  }
+
+  .render figcaption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 25px;
+    color: #92a494;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .render figcaption a {
+    color: #9ddd64;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .render figcaption a:hover {
+    text-decoration: underline;
+  }
+
+  .additional-render {
+    margin-top: 24px;
+  }
+
+  .project-information {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 48px;
+    padding: 0 0 80px;
+  }
+
+  .project-overview {
+    flex: 2 1 360px;
+    min-width: 0;
+  }
+
+  .project-information h2 {
+    margin: 0 0 24px;
+    color: #9ddd64;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+  }
+
+  .project-overview p {
+    max-width: 760px;
+    margin: 0 0 18px;
+    color: #9bac9e;
+    font-size: 16px;
+    line-height: 1.85;
+  }
+
+  .project-facts {
+    flex: 1 1 240px;
+    min-width: 0;
+    padding: 28px;
+    align-self: flex-start;
+    background: #171f19;
+    border: 1px solid #2d3a30;
+    border-radius: 14px;
+  }
+
+  .project-facts > div + div {
+    margin-top: 32px;
+  }
+
+  .tools-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tools-list li {
+    padding: 9px 14px;
+    background: #253026;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  .project-facts dl {
+    margin: 0;
+  }
+
+  .technical-detail + .technical-detail {
+    margin-top: 20px;
+  }
+
+  .technical-detail dt {
+    margin-bottom: 8px;
+    color: #9bac9e;
+    font-size: 13px;
+  }
+
+  .technical-detail dd {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 768px) {
+    .project-page {
+      padding: 30px 5% 0;
+    }
+
+    .back-link {
+      margin-top: 45px;
+    }
+
+    .project-header {
+      padding-bottom: 45px;
+    }
+
+    .project-gallery {
+      padding-bottom: 65px;
+    }
+
+    .render figcaption {
+      padding: 18px;
+    }
+  }
+</style>

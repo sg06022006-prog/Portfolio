@@ -1,0 +1,46 @@
+---
+import { contacts } from '../data/contacts';
+import { translator } from '../i18n/ui';
+import type { Locale } from '../i18n/paths';
+interface Props { locale?: Locale; }
+const { locale = 'en' } = Astro.props;
+const t = translator(locale);
+---
+
+<footer class="site-footer">
+  <span>© {new Date().getFullYear()} Dblmok</span>
+  <nav aria-label={t('contact')}>
+    <a href={`mailto:${contacts.email}`}>{contacts.email}</a>
+    <a href={contacts.telegramUrl}>Telegram @{contacts.telegram} ↗</a>
+  </nav>
+</footer>
+
+<style>
+  .site-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 30px 6%;
+    border-top: 1px solid #29372d;
+    color: #9bac9e;
+    font-size: 12px;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  a {
+    color: #9ddd64;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+
+  a:hover { text-decoration: underline; }
+  a:focus-visible { outline: 2px solid #9ddd64; outline-offset: 5px; }
+</style>

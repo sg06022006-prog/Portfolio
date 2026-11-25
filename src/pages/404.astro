@@ -1,0 +1,23 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { pagePath } from '../i18n/paths';
+---
+<Layout title="404 | Dblmok" noindex>
+  <main>
+    <p>404</p>
+    <h1>Page not found</h1>
+    <p>Страница не найдена. Sivua ei löytynyt.</p>
+    <nav aria-label="Home / Главная / Etusivu">
+      <a href={pagePath('en')}>Home</a>
+      <a href={pagePath('ru')}>Главная</a>
+      <a href={pagePath('fi')}>Etusivu</a>
+    </nav>
+  </main>
+</Layout>
+<style>
+  main { padding: clamp(24px, 7vw, 90px); min-height: 70vh; }
+  h1 { font-size: clamp(36px, 6vw, 80px); margin: 20px 0; }
+  p { color: #a6b3a8; }
+  nav { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 40px; }
+  a { color: #9ddd64; }
+</style>

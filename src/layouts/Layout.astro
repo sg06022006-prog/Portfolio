@@ -1,0 +1,128 @@
+
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { asset, locales, pagePath, pageFromUrl, type Locale } from '../i18n/paths';
+import { translator } from '../i18n/ui';
+
+interface Props {
+  title?: string;
+  description?: string;
+  locale?: Locale;
+  image?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = 'Dblmok | 3D Artist Portfolio',
+  description = 'Dblmok - 3D Art, Environment Art, Prop Art and creative projects.',
+  locale = 'en',
+  image = '/images/projects/cafe-1600.webp',
+  noindex = false,
+} = Astro.props;
+const t = translator(locale);
+const currentPage = pageFromUrl(Astro.url);
+const canonical = Astro.site && !noindex ? new URL(Astro.url.pathname, Astro.site) : undefined;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+
+    <meta
+      name="description"
+      content={description}
+    />
+
+    <meta name="theme-color" content="#0b100d" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex" />}
+    {Astro.site && !noindex && locales.map((language) => <link rel="alternate" hreflang={language} href={new URL(pagePath(language, currentPage), Astro.site)} />)}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content={{en: 'en_US', ru: 'ru_RU', fi: 'fi_FI'}[locale]} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={Astro.site ? new URL(asset(image), Astro.site) : asset(image)} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230b100d'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-size='43' font-weight='bold' fill='%239ddd64'%3ED%3C/text%3E%3C/svg%3E"
+    />
+
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">{t('skip')}</a>
+    <div class="site-shell">
+      <Header locale={locale} />
+
+      <div class="site-content" id="main-content" tabindex="-1">
+        <slot />
+        <Footer locale={locale} />
+      </div>
+    </div>
+  </body>
+</html>
+
+<style>
+  :global(*) {
+    box-sizing: border-box;
+  }
+  :global(a:focus-visible), :global(button:focus-visible), :global(summary:focus-visible) { outline: 2px solid #9ddd64; outline-offset: 5px; }
+  :global(img) { max-width: 100%; }
+  :global(.work-status) { display: inline-block; margin: 8px 10px 8px 0; padding: 5px 9px; border: 1px solid #62723f; border-radius: 5px; background: #26301b; color: #c4e88f; font-size: 12px; line-height: 1.4; }
+  .skip-link { position: fixed; top: -100px; left: 16px; z-index: 100; padding: 14px 20px; background: #9ddd64; color: #101710; border-radius: 8px; }
+  .skip-link:focus { top: 16px; }
+
+  :global(html) {
+    scroll-behavior: smooth;
+    scroll-padding-top: 20px;
+    background: #0b100d;
+  }
+
+  :global(body) {
+    margin: 0;
+    min-width: 320px;
+    background: #0b100d;
+    color: #f3f5f2;
+    font-family:
+      'Segoe UI',
+      Arial,
+      Helvetica,
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .site-shell {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    min-height: 100vh;
+  }
+
+  .site-content {
+    min-width: 0;
+  }
+
+  @media (max-width: 900px) {
+    .site-shell {
+      display: block;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(html) {
+      scroll-behavior: auto;
+    }
+  }
+</style>

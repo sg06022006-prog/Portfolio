@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProjectCatalog from '../components/ProjectCatalog.astro';
+import { getProjects } from '../data/projects';
+import { translator } from '../i18n/ui';
+import type { Locale } from '../i18n/paths';
+interface Props { locale?: Locale; modelsOnly?: boolean; }
+const { locale = 'en', modelsOnly = false } = Astro.props;
+const t = translator(locale);
+const all = await getProjects(locale);
+const projects = modelsOnly ? all.filter((project) => project.kind === '3d') : all;
+const title = modelsOnly ? t('models') : t('projects');
+const intro = modelsOnly ? t('modelsIntro') : t('catalogIntro');
+---
+<Layout locale={locale} title={title + ' | Dblmok'} description={intro}>
+  <ProjectCatalog locale={locale} projects={projects} title={title}
+    breadcrumb={t('portfolio') + ' / ' + title} introduction={intro}
+    sectionTitle={modelsOnly ? t('scenes') : t('allWorks')} countLabel={modelsOnly ? t('workCount') : t('projectCount')} />
+</Layout>

@@ -1,0 +1,257 @@
+---
+import { locales, pagePath, pageFromUrl, type Locale } from '../i18n/paths';
+import { translator } from '../i18n/ui';
+interface Props { locale?: Locale; }
+const { locale = 'en' } = Astro.props;
+const t = translator(locale);
+const currentPage = pageFromUrl(Astro.url);
+const languagePage = currentPage.startsWith('404') ? '' : currentPage;
+const links = [
+  { page: '', label: t('home') },
+  { page: 'projects/', label: t('projects') },
+  { page: 'models/', label: t('models') },
+  { page: 'about/', label: t('about') },
+];
+const active = (page: string) => page === '' ? currentPage === '' : currentPage.startsWith(page);
+---
+<header class="sidebar">
+  <a class="brand" href={pagePath(locale)} aria-label={'Dblmok / ' + t('home')}>Dblmok<span>.</span></a>
+  <div class="sidebar-main">
+    <p class="group-label">{t('navigation')} / 01</p>
+    <nav class="desktop-nav" aria-label={t('navigation')}>
+      {links.map((link, index) => (
+        <a href={pagePath(locale, link.page)} class:list={['nav-item', { active: active(link.page) }]} aria-current={active(link.page) ? 'page' : undefined}>
+          <span class="nav-number">0{index + 1}</span><span>{link.label}</span>
+          {active(link.page) && <span class="active-dot"></span>}
+        </a>
+      ))}
+    </nav>
+  </div>
+  <div class="sidebar-footer">
+    <p class="group-label">{t('languages')}</p>
+    <nav class="languages" aria-label={t('languages')}>
+      {locales.map((language) => <a href={pagePath(language, languagePage)} lang={language} hreflang={language} class:list={{ 'language-active': language === locale }} aria-current={language === locale ? 'true' : undefined}>{language.toUpperCase()}</a>)}
+    </nav>
+    <div class="footer-line"></div>
+    <p class="specialization">{t('focus')}</p>
+    <p class="copyright">© {new Date().getFullYear()} Dblmok</p>
+  </div>
+  <details class="mobile-navigation">
+    <summary>{t('menu')} ☰</summary>
+    <nav aria-label={t('navigation')}>
+      {links.map((link) => <a href={pagePath(locale, link.page)} class:list={{active: active(link.page)}} aria-current={active(link.page) ? 'page' : undefined}>{link.label}</a>)}
+      <div class="mobile-languages" aria-label={t('languages')}>
+        {locales.map((language) => <a href={pagePath(language, languagePage)} lang={language} hreflang={language} aria-current={language === locale ? 'true' : undefined}>{language.toUpperCase()}</a>)}
+      </div>
+    </nav>
+  </details>
+</header>
+<style>
+  .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: 100vh;
+    height: 100dvh;
+    padding: 36px 22px 24px;
+    display: flex;
+    flex-direction: column;
+    background: #151c17;
+    border-right: 1px solid #2a352d;
+  }
+
+  .brand {
+    color: #f3f5f2;
+    font-size: 27px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-decoration: none;
+  }
+
+  .brand span {
+    color: #9ddd64;
+  }
+
+  .sidebar-main {
+    margin-top: 82px;
+  }
+
+  .group-label {
+    margin: 0 0 18px 14px;
+    color: #718577;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+  }
+
+  .desktop-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 50px;
+    padding: 0 15px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: #aab8ad;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition:
+      background 0.25s,
+      border-color 0.25s,
+      color 0.25s;
+  }
+
+  a.nav-item:hover {
+    color: #9ddd64;
+    background: #202d23;
+  }
+
+  .nav-item.active {
+    color: #9ddd64;
+    background: #293b2d;
+    border-color: #354a38;
+  }
+
+  .nav-number {
+    color: #738a78;
+    font-size: 10px;
+    font-weight: 400;
+  }
+
+  .active-dot {
+    margin-left: auto;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #9ddd64;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+  }
+
+  .languages {
+    display: flex;
+    gap: 16px;
+    padding-left: 14px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .footer-line {
+    height: 1px;
+    background: #334137;
+    margin: 25px 0;
+  }
+
+  .specialization {
+    color: #a1b1a4;
+    font-size: 10px;
+    line-height: 1.9;
+    letter-spacing: 1px;
+  }
+
+  .copyright {
+    color: #708173;
+    font-size: 10px;
+    margin-top: 24px;
+  }
+
+  .mobile-navigation {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .sidebar {
+      position: relative;
+      height: auto;
+      min-height: 72px;
+      padding: 16px 5%;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      border-right: none;
+      border-bottom: 1px solid #2a352d;
+    }
+
+    .brand {
+      font-size: 23px;
+    }
+
+    .sidebar-main,
+    .sidebar-footer {
+      display: none;
+    }
+
+    .mobile-navigation {
+      display: block;
+      position: relative;
+    }
+
+    .mobile-navigation summary {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      color: #9ddd64;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .mobile-navigation summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .mobile-navigation nav {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      width: min(280px, 85vw);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: #1b251e;
+      border: 1px solid #354637;
+      border-radius: 12px;
+      box-shadow: 0 16px 40px #0008;
+    }
+
+    .mobile-navigation nav a {
+      padding: 14px;
+      color: #e0e9e0;
+      font-size: 12px;
+      text-decoration: none;
+      border-radius: 7px;
+    }
+
+    .mobile-navigation nav a:hover,
+    .mobile-navigation nav a.active {
+      background: #293b2d;
+      color: #9ddd64;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-item {
+      transition: none;
+    }
+  }
+
+  .languages a { color: #a1b1a4; text-decoration: none; padding: 6px 0; }
+  .languages a.language-active { color: #9ddd64; text-decoration: underline; text-underline-offset: 6px; }
+  .nav-item, .group-label { text-transform: uppercase; }
+  .mobile-languages { display: flex; flex-wrap: wrap; border-top: 1px solid #334137; padding-top: 8px; }
+  .mobile-languages a[aria-current] { color: #9ddd64; text-decoration: underline; }
+</style>
