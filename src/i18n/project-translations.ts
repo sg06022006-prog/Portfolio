@@ -3,7 +3,7 @@ export const projectTranslations = {
     'full-scene': {
       description: 'Личный проект, который я самостоятельно создаю в Blender с PBR-текстурами. Пока находится в работе.',
       overview: [
-        'FullScene я создаю самостоятельно в Blender как личный проект. Для материалов использую PBR-текстуры.',
+        'Gunsmith’s room я создаю самостоятельно в Blender как личный проект. Для материалов использую PBR-текстуры.',
         'Сцена ещё не закончена. Здесь показано её текущее состояние, а работа над проектом продолжается.',
       ],
     },
@@ -45,7 +45,7 @@ export const projectTranslations = {
     'full-scene': {
       description: 'Itsenäinen henkilökohtainen Blender-projekti, jossa käytän PBR-tekstuureja. Työ on vielä kesken.',
       overview: [
-        'FullScene on henkilökohtainen projekti, jota teen itsenäisesti Blenderissä. Käytän materiaaleissa PBR-tekstuureja.',
+        'Gunsmith’s room on henkilökohtainen projekti, jota teen itsenäisesti Blenderissä. Käytän materiaaleissa PBR-tekstuureja.',
         'Kohtaus ei ole vielä valmis. Tällä sivulla näkyy sen nykyinen tila, ja jatkan projektin työstämistä.',
       ],
     },

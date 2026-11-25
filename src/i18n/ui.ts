@@ -60,6 +60,8 @@ const words = {
   controls: ['Rotate: drag. Zoom: scroll or pinch. Pan: right-drag or use two fingers.', 'Вращение: перетаскивание. Масштаб: колесо или щипок. Сдвиг: правая кнопка мыши или два пальца.', 'Kierrä vetämällä. Zoomaa hiiren rullalla tai nipistämällä. Siirrä oikealla hiiren painikkeella tai kahdella sormella.'],
   load: ['Load 3D scene', 'Загрузить 3D-сцену', 'Lataa 3D-kohtaus'],
   loading: ['Loading 3D scene…', 'Загрузка 3D-сцены…', 'Ladataan 3D-kohtausta…'],
+  downloading: ['Downloading model', 'Скачивание модели', 'Ladataan mallia'],
+  preparing: ['Preparing scene…', 'Подготовка сцены…', 'Valmistellaan kohtausta…'],
   ready: ['Scene loaded. Choose a view mode below.', 'Сцена загружена. Выбери режим просмотра.', 'Kohtaus ladattu. Valitse katselutila.'],
   idle: ['Load the scene to explore it in 3D.', 'Загрузи сцену для просмотра в 3D.', 'Lataa kohtaus tutkiaksesi sitä 3D-muodossa.'],
   withTextures: ['With textures', 'С текстурами', 'Tekstuureilla'],

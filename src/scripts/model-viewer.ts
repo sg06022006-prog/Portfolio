@@ -33,7 +33,12 @@ function setupViewer(viewer: HTMLElement) {
 
   async function load() {
     const currentRequest = ++request;
-    viewport.querySelector<HTMLButtonElement>('.load-button')!.disabled = true;
+    const loadButton = viewport.querySelector<HTMLButtonElement>('.load-button')!;
+    const progressContainer = viewport.querySelector<HTMLElement>('.download-progress')!;
+    const progress = progressContainer.querySelector('progress')!;
+    loadButton.disabled = true;
+    loadButton.textContent = labels.loading;
+    progressContainer.hidden = false;
     status.textContent = labels.loading;
     try {
       const THREE = await import('three');
@@ -103,7 +108,25 @@ function setupViewer(viewer: HTMLElement) {
       };
       dispose = cleanup;
 
-      const gltf = await new GLTFLoader().loadAsync(viewer.dataset.model!);
+      status.textContent = labels.downloading;
+      const gltf = await new GLTFLoader().loadAsync(viewer.dataset.model!, (event) => {
+        if (currentRequest !== request) return;
+        // The build knows the decoded file size; HTTP compression changes Content-Length.
+        const total = Number(viewer.dataset.modelBytes) || event.total;
+        if (total <= 0) {
+          progress.removeAttribute('value');
+          loadButton.textContent = labels.downloading;
+          return;
+        }
+        const percent = Math.min(100, Math.floor(event.loaded / total * 100));
+        progress.value = percent;
+        loadButton.textContent = `${labels.downloading} ${percent}%`;
+        // Downloading is finished, but textures still need decoding before display.
+        if (event.loaded >= total) {
+          loadButton.textContent = labels.preparing;
+          status.textContent = labels.preparing;
+        }
+      });
       const model = gltf.scene;
       scene.add(model);
       if (currentRequest !== request) { cleanup(); return; }

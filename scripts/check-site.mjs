@@ -1,5 +1,5 @@
 // Check the generated site, including links used under a GitHub Pages subfolder.
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import assert from 'node:assert/strict';
 
@@ -33,11 +33,17 @@ for (const language of ['', 'ru/', 'fi/']) {
     const cafe = html.indexOf(`${base}${language}projects/cafe/`);
     const fullScene = html.indexOf(`${base}${language}projects/full-scene/`);
     const forest = html.indexOf(`${base}${language}projects/forest/`);
-    assert.ok(cafe >= 0 && fullScene > cafe && forest > fullScene, `FullScene must be second: ${language}${page}`);
+    assert.ok(cafe >= 0 && fullScene > cafe && forest > fullScene, `Gunsmith’s room must be second: ${language}${page}`);
   }
   for (const slug of ['cafe', 'island']) {
     const html = readFileSync(join(root, language, 'projects', slug, 'index.html'), 'utf8');
     assert.ok(html.includes('data-lighting="soft"'), `Expected softer studio light: ${language}${slug}`);
+  }
+  for (const slug of ['cafe', 'island', 'night-room', 'full-scene']) {
+    const html = readFileSync(join(root, language, 'projects', slug, 'index.html'), 'utf8');
+    const bytes = statSync(join(root, 'models', slug + '.glb')).size;
+    assert.ok(html.includes(`data-model-bytes="${bytes}"`) && html.includes('<progress'), `Missing download progress: ${language}${slug}`);
+    if (slug === 'full-scene') assert.ok(html.includes('Gunsmith’s room') && !html.includes('FullScene'), `Wrong project title: ${language}`);
   }
 }
 const model = readFileSync(join(root, 'models/night-room.glb'));
